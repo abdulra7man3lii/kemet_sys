@@ -1,0 +1,254 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Subscription
+  subscription Subscription?
+
+  // Relations
+  users         User[]
+  customers     Customer[]
+  interactions  Interaction[]
+  internalNotes InternalNote[]
+  tasks         Task[]
+  events        Event[]
+  files         File[]
+  finance       FinanceRecord[]
+  roles         Role[] // Custom roles for this organization
+}
+
+model Plan {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  price       Float    @default(0)
+  userLimit   Int      @default(5)
+  features    String[] // e.g., ["ROLE_MANAGER", "FINANCE_HUB", "MARKETING_WA"]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id        Int      @id @default(autoincrement())
+  status    String   @default("ACTIVE") // ACTIVE, CANCELLED, EXPIRED
+  startDate DateTime @default(now())
+  endDate   DateTime?
+  
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int          @unique
+  
+  plan           Plan         @relation(fields: [planId], references: [id])
+  planId         Int
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  isGlobal    Boolean  @default(false) // If true, available to all orgs (e.g. SUPER_ADMIN)
+  
+  organizationId Int?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  
+  permissions Permission[]
+  users       User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, organizationId])
+}
+
+model Permission {
+  id          Int      @id @default(autoincrement())
+  action      String   // e.g. "create", "read", "update", "delete"
+  subject     String   // e.g. "customer", "finance", "team"
+  description String?
+  
+  roles       Role[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([action, subject])
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  roleId Int
+  role   Role @relation(fields: [roleId], references: [id])
+
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  createdCustomers Customer[] @relation("CreatedBy")
+  handledCustomers Customer[] @relation("HandledBy")
+  interactions     Interaction[]
+  internalNotes    InternalNote[]
+  tasks            Task[]         @relation("AssignedTo")
+  createdTasks     Task[]         @relation("CreatedByTask")
+  events           Event[]
+  files            File[]
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  phone     String?
+  company   String?
+  status    String   @default("LEAD") // LEAD, PROSPECT, CUSTOMER, CHURNED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  createdById Int
+  createdBy   User @relation("CreatedBy", fields: [createdById], references: [id])
+  
+  handlers    User[] @relation("HandledBy")
+  
+  interactions Interaction[]
+  internalNotes InternalNote[]
+  tasks         Task[]
+  events        Event[]
+  files         File[]
+}
+
+model Interaction {
+  id        Int      @id @default(autoincrement())
+  type      String   // CALL, EMAIL, MEETING, NOTE
+  notes     String?
+  date      DateTime @default(now())
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  customerId Int
+  customer   Customer @relation(fields: [customerId], references: [id])
+  
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model InternalNote {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  customerId Int
+  customer   Customer @relation(fields: [customerId], references: [id])
+  
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  status      String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, CANCELLED
+  priority    String    @default("MEDIUM")  // LOW, MEDIUM, HIGH, URGENT
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  customerId     Int?
+  customer       Customer? @relation(fields: [customerId], references: [id])
+  
+  assignedToId   Int?
+  assignedTo     User? @relation("AssignedTo", fields: [assignedToId], references: [id])
+  
+  createdById    Int
+  createdBy      User @relation("CreatedByTask", fields: [createdById], references: [id])
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  location    String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  customerId     Int?
+  customer       Customer? @relation(fields: [customerId], references: [id])
+  
+  userId         Int
+  user           User @relation(fields: [userId], references: [id])
+}
+
+model File {
+  id        Int      @id @default(autoincrement())
+  name      String
+  url       String
+  size      Int
+  type      String   // PDF, IMAGE, DOC, etc.
+  createdAt DateTime @default(now())
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  customerId     Int?
+  customer       Customer? @relation(fields: [customerId], references: [id])
+  
+  userId         Int
+  user           User @relation(fields: [userId], references: [id])
+}
+
+model FinanceRecord {
+  id          Int      @id @default(autoincrement())
+  type        String   // INCOME, EXPENSE
+  amount      Float
+  category    String?
+  description String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
