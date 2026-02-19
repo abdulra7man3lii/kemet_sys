@@ -5,39 +5,52 @@ const prisma = new PrismaClient();
 async function main() {
     console.log('Starting total database cleanup...');
 
+    const safelyDelete = async (model) => {
+        try {
+            await model.deleteMany();
+        } catch (e) {
+            if (e.code === 'P2021') {
+                console.log(`Table for ${model.name || 'model'} does not exist, skipping...`);
+            } else {
+                console.log(`Error deleting from ${model.name || 'model'}:`, e.message);
+                // Continue anyway for now
+            }
+        }
+    };
+
     // Delete in order to respect FK constraints
     console.log('Deleting logs and campaigns...');
-    await prisma.whatsAppMessageLog.deleteMany();
-    await prisma.whatsAppCampaign.deleteMany();
-    await prisma.whatsAppTemplate.deleteMany();
-    await prisma.whatsAppAccount.deleteMany();
+    await safelyDelete(prisma.whatsAppMessageLog);
+    await safelyDelete(prisma.whatsAppCampaign);
+    await safelyDelete(prisma.whatsAppTemplate);
+    await safelyDelete(prisma.whatsAppAccount);
 
     console.log('Deleting customer related data...');
-    await prisma.interaction.deleteMany();
-    await prisma.internalNote.deleteMany();
-    await prisma.task.deleteMany();
-    await prisma.event.deleteMany();
-    await prisma.file.deleteMany();
-    await prisma.folder.deleteMany();
-    await prisma.financeRecord.deleteMany();
-    await prisma.importJob.deleteMany();
+    await safelyDelete(prisma.interaction);
+    await safelyDelete(prisma.internalNote);
+    await safelyDelete(prisma.task);
+    await safelyDelete(prisma.event);
+    await safelyDelete(prisma.file);
+    await safelyDelete(prisma.folder);
+    await safelyDelete(prisma.financeRecord);
+    await safelyDelete(prisma.importJob);
 
     console.log('Deleting laundry contacts and lists...');
-    await prisma.laundryContact.deleteMany();
-    await prisma.contactList.deleteMany();
+    await safelyDelete(prisma.laundryContact);
+    await safelyDelete(prisma.contactList);
 
     console.log('Deleting customers and users...');
-    await prisma.customer.deleteMany();
-    await prisma.permission.deleteMany();
-    await prisma.user.deleteMany();
+    await safelyDelete(prisma.customer);
+    await safelyDelete(prisma.permission);
+    await safelyDelete(prisma.user);
 
     console.log('Deleting roles...');
-    await prisma.role.deleteMany();
+    await safelyDelete(prisma.role);
 
     console.log('Deleting subscriptions, plans and organizations...');
-    await prisma.subscription.deleteMany();
-    await prisma.plan.deleteMany();
-    await prisma.organization.deleteMany();
+    await safelyDelete(prisma.subscription);
+    await safelyDelete(prisma.plan);
+    await safelyDelete(prisma.organization);
 
     console.log('Database cleaned. Starting seeding...');
 
