@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { api } from '@/lib/api';
 import { UserPlus, ArrowRight, Building, Mail, Lock, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 

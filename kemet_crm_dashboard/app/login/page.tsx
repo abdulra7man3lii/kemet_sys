@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { api } from '@/lib/api';
 import { ArrowRight, User } from 'lucide-react';
 import Link from 'next/link';
 
@@ -13,32 +14,20 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const router = useRouter();
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-            const res = await fetch(`${apiUrl}/api/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                toast.error(data.message || 'Login failed');
-                setLoading(false);
-                return;
-            }
+            const data = await api.post<any>('/auth/login', { email, password });
 
             const { token, ...userData } = data;
             login(token, userData as any);
             toast.success('Login successful!');
             router.push('/dashboard');
         } catch (err) {
-            toast.error('Connection error. Please try again.');
+            // Error is already toasted by api.ts
             setLoading(false);
         }
     };
