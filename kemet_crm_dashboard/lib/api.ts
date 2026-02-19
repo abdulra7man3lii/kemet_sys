@@ -1,6 +1,11 @@
 import { toast } from 'sonner';
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000') + '/api';
+const getApiUrl = () => {
+    const rawUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+    return rawUrl.endsWith('/api') ? rawUrl : `${rawUrl}/api`;
+};
+
+const API_URL = getApiUrl();
 
 const getHeaders = () => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
