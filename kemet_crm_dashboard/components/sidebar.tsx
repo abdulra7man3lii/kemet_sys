@@ -73,10 +73,9 @@ const navigationGroups: NavGroup[] = [
     {
         group: 'Data Laundry',
         items: [
-            { name: 'Import Lists', href: '/dashboard/import', icon: Eraser },
-            { name: 'All Contacts', href: '/dashboard/laundry/contacts', icon: List },
+            { name: 'Database Lists', href: '/dashboard/laundry/contacts', icon: List },
         ],
-        roles: ['ORG_ADMIN', 'SUPER_ADMIN']
+        roles: ['ORG_ADMIN', 'SUPER_ADMIN', 'EMPLOYEE']
     },
     {
         group: 'Business Hub',
@@ -111,9 +110,10 @@ export function Sidebar({ className }: { className?: string }) {
                 // If item has restricted roles, check if user has access
                 if (item.roles && !item.roles.includes(userRole)) return false;
 
-                // Special rule: Employees only see Dashboard and Leads (Customers)
-                if (userRole === 'EMPLOYEE') {
-                    return ['Dashboard', 'Leads'].includes(item.name);
+                // Flexible rule: Org Admins and Super Admins see everything.
+                // All other roles (custom or standard) see the restricted agent view.
+                if (userRole !== 'SUPER_ADMIN' && userRole !== 'ORG_ADMIN') {
+                    return ['Dashboard', 'Leads', 'Database Lists', 'Tasks'].includes(item.name);
                 }
                 return true;
             })
@@ -121,12 +121,12 @@ export function Sidebar({ className }: { className?: string }) {
     }).filter(group => group.items.length > 0);
 
     return (
-        <div className={cn("flex flex-col h-full bg-gradient-to-b from-slate-950 via-slate-900 to-black border-r border-yellow-600/20 w-64 shadow-2xl", className)}>
-            <div className="flex items-center h-20 px-6 bg-black/40 border-b border-yellow-600/10 backdrop-blur-md">
+        <div className={cn("flex flex-col h-full bg-[#070B14] border-r border-[#1B2A40] w-64 shadow-2xl relative z-50", className)}>
+            <div className="flex items-center h-20 px-8 border-b border-[#1B2A40]">
                 <div className="flex flex-col">
-                    <span className="text-2xl font-black bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 bg-clip-text text-transparent tracking-tighter uppercase italic">KEMET</span>
+                    <span className="text-2xl font-black text-[#D4AF37] tracking-tighter uppercase font-serif italic">KEMET</span>
                     {user?.organizationName && (
-                        <span className="text-[9px] font-black text-yellow-600/70 uppercase tracking-[0.2em] truncate max-w-[180px] mt-0.5">
+                        <span className="text-[10px] font-bold text-[#8A93A5] uppercase tracking-widest truncate max-w-[180px] mt-0.5">
                             {user.organizationName}
                         </span>
                     )}
@@ -135,13 +135,13 @@ export function Sidebar({ className }: { className?: string }) {
 
             <div className="flex-1 overflow-y-auto py-8 px-4 space-y-10 custom-scrollbar">
                 {filteredGroups.map((group) => (
-                    <div key={group.group} className="space-y-3">
+                    <div key={group.group} className="space-y-4">
                         {group.group !== 'Main' && (
-                            <h3 className="px-4 text-[9px] font-black text-yellow-600 uppercase tracking-[0.3em] opacity-80">
+                            <h3 className="px-5 text-[10px] font-bold text-[#8A93A5] uppercase tracking-[0.2em] opacity-80">
                                 {group.group}
                             </h3>
                         )}
-                        <div className="space-y-1.5">
+                        <div className="space-y-1">
                             {group.items.map((item) => {
                                 const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
                                 return (
@@ -149,18 +149,20 @@ export function Sidebar({ className }: { className?: string }) {
                                         key={item.name}
                                         href={item.href}
                                         className={cn(
-                                            "flex items-center px-4 py-3 text-xs font-bold rounded-xl transition-all duration-300 group",
+                                            "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group relative",
                                             isActive
-                                                ? "bg-gradient-to-r from-yellow-600/20 to-yellow-900/40 text-yellow-400 border border-yellow-600/40 shadow-[0_0_15px_rgba(234,179,8,0.15)]"
-                                                : "text-slate-400 hover:bg-yellow-600/5 hover:text-yellow-500 border border-transparent hover:border-yellow-600/10"
+                                                ? "bg-[#111C2E] text-[#D4AF37]"
+                                                : "text-[#8A93A5] hover:bg-white/5 hover:text-[#E6EAF0]"
                                         )}
                                     >
+                                        {isActive && (
+                                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2/3 bg-[#D4AF37] rounded-r-full" />
+                                        )}
                                         <item.icon className={cn(
-                                            "mr-4 h-5 w-5 transition-transform duration-300 group-hover:scale-110",
-                                            isActive ? "text-yellow-500" : "text-slate-500 group-hover:text-yellow-600"
+                                            "mr-4 h-5 w-5 transition-transform duration-200 group-hover:scale-105",
+                                            isActive ? "text-[#D4AF37]" : "text-[#8A93A5] group-hover:text-[#E6EAF0]"
                                         )} />
-                                        <span className="tracking-wide uppercase">{item.name}</span>
-                                        {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,1)]" />}
+                                        <span className="tracking-tight">{item.name}</span>
                                     </Link>
                                 );
                             })}

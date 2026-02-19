@@ -158,55 +158,50 @@ export function RoleManager() {
                 </Button>
             </div>
 
-            <Card className="border-yellow-600/10 transition-all hover:shadow-lg hover:shadow-yellow-600/5">
+            <Card className="bg-[#111C2E] border-[#1B2A40] shadow-2xl">
                 <Table>
-                    <TableHeader className="bg-slate-50/50">
-                        <TableRow className="border-yellow-600/10">
-                            <TableHead className="py-4 font-black uppercase text-[10px] tracking-widest text-slate-400">Role Name</TableHead>
-                            <TableHead className="py-4 font-black uppercase text-[10px] tracking-widest text-slate-400">Description</TableHead>
-                            <TableHead className="py-4 font-black uppercase text-[10px] tracking-widest text-slate-400">Permissions</TableHead>
-                            <TableHead className="py-4 font-black uppercase text-[10px] tracking-widest text-slate-400">Users</TableHead>
-                            <TableHead className="py-4 font-black uppercase text-[10px] tracking-widest text-slate-400 text-right">Actions</TableHead>
+                    <TableHeader className="bg-[#0E1624]">
+                        <TableRow className="border-[#1B2A40] hover:bg-transparent">
+                            <TableHead className="py-5 font-black uppercase text-[10px] tracking-widest text-[#8A93A5]">Role Identity</TableHead>
+                            <TableHead className="py-5 font-black uppercase text-[10px] tracking-widest text-[#8A93A5]">Description</TableHead>
+                            <TableHead className="py-5 font-black uppercase text-[10px] tracking-widest text-[#8A93A5]">Permissions</TableHead>
+                            <TableHead className="py-5 font-black uppercase text-[10px] tracking-widest text-[#8A93A5]">Users</TableHead>
+                            <TableHead className="py-5 font-black uppercase text-[10px] tracking-widest text-[#8A93A5] text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {roles.map((role) => (
-                            <TableRow key={role.id} className="hover:bg-slate-50/30 transition-colors">
-                                <TableCell className="font-bold">
+                            <TableRow key={role.id} className="border-[#1B2A40] hover:bg-[#1B2A40]/50 transition-colors">
+                                <TableCell className="font-bold text-[#E6EAF0]">
                                     <div className="flex items-center gap-2">
                                         {role.name}
                                         {role.isGlobal && (
-                                            <Badge variant="outline" className="text-[8px] bg-slate-100 font-black h-4 px-1">GLOBAL</Badge>
+                                            <Badge variant="outline" className="text-[8px] bg-[#1B2A40] text-[#D4AF37] border-[#D4AF37]/30 font-black h-4 px-1">GLOBAL</Badge>
                                         )}
                                     </div>
                                 </TableCell>
-                                <TableCell className="text-slate-500 text-xs max-w-[200px] truncate">
+                                <TableCell className="text-[#8A93A5] text-xs max-w-[200px] truncate font-medium">
                                     {role.description || 'No description provided.'}
                                 </TableCell>
                                 <TableCell>
-                                    <div className="flex flex-wrap gap-1 max-w-[300px]">
+                                    <div className="flex flex-wrap gap-1.5 max-w-[300px]">
                                         {role.permissions.map((p) => (
-                                            <Badge key={p.id} variant="secondary" className="text-[9px] font-bold px-1.5 py-0 bg-yellow-50 text-yellow-800 border-yellow-200">
+                                            <Badge key={p.id} variant="secondary" className="text-[9px] font-bold px-2 py-0.5 bg-[#D4AF37]/10 text-[#D4AF37] border-[#D4AF37]/20">
                                                 {p.action}:{p.subject}
                                             </Badge>
                                         ))}
-                                        {role.permissions.length === permissions.length && (
-                                            <Badge variant="secondary" className="text-[9px] font-bold px-1.5 py-0 bg-green-50 text-green-800 border-green-200">
-                                                FULL ACCESS
-                                            </Badge>
-                                        )}
                                     </div>
                                 </TableCell>
-                                <TableCell className="font-mono text-xs">
+                                <TableCell className="font-mono text-xs text-[#8A93A5]">
                                     {role._count?.users || 0} users
                                 </TableCell>
                                 <TableCell className="text-right">
                                     {!role.isGlobal ? (
-                                        <div className="flex items-center justify-end gap-2">
+                                        <div className="flex items-center justify-end gap-3">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-8 w-8 text-slate-400 hover:text-yellow-600"
+                                                className="h-8 w-8 text-[#8A93A5] hover:text-[#D4AF37] hover:bg-[#1B2A40]"
                                                 onClick={() => handleOpenEditDialog(role)}
                                             >
                                                 <Edit className="h-4 w-4" />
@@ -214,7 +209,7 @@ export function RoleManager() {
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-8 w-8 text-slate-400 hover:text-red-600"
+                                                className="h-8 w-8 text-[#8A93A5] hover:text-[#E5484D] hover:bg-red-950/20"
                                                 onClick={() => handleDeleteRole(role.id)}
                                                 disabled={role._count?.users! > 0}
                                             >
@@ -222,7 +217,7 @@ export function RoleManager() {
                                             </Button>
                                         </div>
                                     ) : (
-                                        <Lock className="h-4 w-4 ml-auto text-slate-300 mr-2" />
+                                        <Lock className="h-4 w-4 ml-auto text-[#1B2A40] mr-3" />
                                     )}
                                 </TableCell>
                             </TableRow>
@@ -232,14 +227,14 @@ export function RoleManager() {
             </Card>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col p-0 overflow-hidden border-yellow-600/20">
-                    <DialogHeader className="p-6 bg-slate-950 text-white">
-                        <DialogTitle className="text-2xl font-black italic tracking-tighter flex items-center gap-3">
-                            <Settings className="h-6 w-6 text-yellow-500" />
-                            {editingRole ? 'Modify Role' : 'Create Custom Role'}
+                <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col p-0 overflow-hidden border-[#1B2A40] bg-[#0E1624] text-[#E6EAF0]">
+                    <DialogHeader className="p-8 bg-[#070B14] border-b border-[#1B2A40]">
+                        <DialogTitle className="text-2xl font-black italic tracking-tighter flex items-center gap-3 text-[#D4AF37]">
+                            <Shield className="h-6 w-6" />
+                            {editingRole ? 'RECONFIGURE TIER' : 'INITIALIZE ROLE'}
                         </DialogTitle>
-                        <DialogDescription className="text-slate-400 font-medium">
-                            Configure access levels and specific capabilities for this professional tier.
+                        <DialogDescription className="text-[#8A93A5] font-medium text-sm mt-1">
+                            Establish specialized permission matrices for enterprise-level operations.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -272,8 +267,8 @@ export function RoleManager() {
                                     <div
                                         key={p.id}
                                         className={`flex items-start gap-4 p-3 rounded-xl border transition-all cursor-pointer ${selectedPermissionIds.includes(p.id)
-                                                ? 'bg-yellow-50/50 border-yellow-600/30'
-                                                : 'bg-slate-50 border-slate-200 hover:border-yellow-600/20'
+                                            ? 'bg-yellow-50/50 border-yellow-600/30'
+                                            : 'bg-slate-50 border-slate-200 hover:border-yellow-600/20'
                                             }`}
                                         onClick={() => handleTogglePermission(p.id)}
                                     >

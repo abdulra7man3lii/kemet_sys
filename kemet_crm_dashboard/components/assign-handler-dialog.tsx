@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -18,7 +18,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { UserPlus, User as UserIcon } from 'lucide-react';
+import { UserPlus, User as UserIcon, Loader2, CheckCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { User } from '@/types';
 import { toast } from 'sonner';
@@ -76,48 +76,57 @@ export function AssignHandlerDialog({ customerId, existingHandlerIds, onSuccess 
                     <UserPlus className="h-4 w-4 mr-2" /> Assign Member
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[450px] bg-white/95 backdrop-blur-xl border-yellow-600/20 shadow-2xl">
                 <DialogHeader>
-                    <DialogTitle>Assign Team Member</DialogTitle>
-                    <DialogDescription>
-                        Select a team member to handle this customer.
-                    </DialogDescription>
+                    <DialogTitle className="text-3xl font-black tracking-tighter uppercase text-slate-900 border-b border-yellow-600/10 pb-4">
+                        Assign <span className="text-yellow-600">Member</span>
+                    </DialogTitle>
+                    {/* DialogDescription removed as per instruction */}
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <Select
-                        value={selectedUserId}
-                        onValueChange={setSelectedUserId}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select a team member" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {users.map((user) => (
-                                <SelectItem key={user.id} value={user.id.toString()}>
-                                    <div className="flex items-center">
-                                        <UserIcon className="h-4 w-4 mr-2 text-slate-400" />
-                                        <span>{user.name || user.email}</span>
+                <div className="grid gap-6 py-8">
+                    <div className="space-y-2">
+                        <Label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Select Team Member</Label>
+                        <Select
+                            value={selectedUserId}
+                            onValueChange={setSelectedUserId}
+                        >
+                            <SelectTrigger className="h-14 bg-white border-slate-200 focus:ring-yellow-600/20 font-bold rounded-xl shadow-sm">
+                                <SelectValue placeholder="Select a team member" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-yellow-600/20 shadow-2xl">
+                                {users.map((user) => (
+                                    <SelectItem key={user.id} value={user.id.toString()} className="py-3">
+                                        <div className="flex items-center">
+                                            <div className="h-8 w-8 rounded-full bg-yellow-50 flex items-center justify-center mr-3 border border-yellow-100 font-black text-yellow-700 text-[10px]">
+                                                {(user.name?.[0] || user.email[0]).toUpperCase()}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-slate-900">{user.name || 'Team Member'}</span>
+                                                <span className="text-[10px] text-slate-400">{user.email}</span>
+                                            </div>
+                                        </div>
+                                    </SelectItem>
+                                ))}
+                                {users.length === 0 && (
+                                    <div className="p-4 text-xs text-center text-slate-500 italic">
+                                        No other members available
                                     </div>
-                                </SelectItem>
-                            ))}
-                            {users.length === 0 && (
-                                <div className="p-2 text-sm text-center text-slate-500 italic">
-                                    No other members available
-                                </div>
-                            )}
-                        </SelectContent>
-                    </Select>
+                                )}
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => setOpen(false)}>
+                <DialogFooter className="border-t border-slate-100 pt-6">
+                    <Button variant="ghost" onClick={() => setOpen(false)} className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 h-12 px-8">
                         Cancel
                     </Button>
                     <Button
                         onClick={handleAssign}
                         disabled={loading || !selectedUserId}
-                        className="bg-indigo-600 hover:bg-indigo-700"
+                        className="bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white font-black uppercase text-[10px] tracking-widest h-12 px-10 shadow-xl shadow-yellow-600/20 border-none transition-all rounded-xl"
                     >
-                        {loading ? 'Assigning...' : 'Assign'}
+                        {loading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <CheckCircle className="h-4 w-4 mr-2" />}
+                        Assign Member
                     </Button>
                 </DialogFooter>
             </DialogContent>

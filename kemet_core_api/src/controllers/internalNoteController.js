@@ -4,14 +4,33 @@ const prisma = new PrismaClient();
 // Create an internal note
 const createInternalNote = async (req, res) => {
     const { customerId, content } = req.body;
-    const organizationId = req.user.organizationId;
-    const userId = req.user.id;
+    const { organizationId, role, id: userId } = req.user;
 
     try {
+        const customerIdInt = parseInt(customerId);
+
+        // 1. Verify customer belongs to org and agent has access
+        const customer = await prisma.customer.findFirst({
+            where: {
+                id: customerIdInt,
+                organizationId: organizationId,
+                ...(role === 'EMPLOYEE' ? {
+                    OR: [
+                        { createdById: userId },
+                        { handlers: { some: { id: userId } } }
+                    ]
+                } : {})
+            }
+        });
+
+        if (!customer) {
+            return res.status(403).json({ message: 'Forbidden: Cannot add notes to this customer.' });
+        }
+
         const note = await prisma.internalNote.create({
             data: {
                 content,
-                customerId: parseInt(customerId),
+                customerId: customerIdInt,
                 userId: userId,
                 organizationId,
             },

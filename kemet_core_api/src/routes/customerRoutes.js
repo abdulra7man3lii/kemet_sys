@@ -10,20 +10,20 @@ const {
     getStats,
 } = require('../controllers/customerController');
 const { protect } = require('../middleware/authMiddleware');
+const validate = require('../middleware/validationMiddleware');
+const { createCustomerSchema, updateCustomerSchema } = require('../validators/customerValidator');
 
 const router = express.Router();
 
 router.use(protect); // All customer routes are protected
 
-router.post('/', createCustomer);
+router.post('/', validate(createCustomerSchema), createCustomer);
 router.get('/', getCustomers);
 router.get('/stats', getStats);
 router.get('/:id', getCustomerById);
-router.put('/:id', updateCustomer);
+router.put('/:id', validate(updateCustomerSchema), updateCustomer);
 router.delete('/:id', deleteCustomer);
 router.post('/:id/assign', assignHandler);
 router.post('/:id/unassign', unassignHandler);
-
-module.exports = router;
 
 module.exports = router;

@@ -187,9 +187,16 @@ const deleteCustomer = async (req, res) => {
             return res.status(404).json({ error: 'Customer not found' });
         }
 
-        await prisma.customer.delete({
-            where: { id: parseInt(id) },
-        });
+        // Manually delete related records to handle FK constraints
+        await prisma.$transaction([
+            prisma.interaction.deleteMany({ where: { customerId: parseInt(id) } }),
+            prisma.internalNote.deleteMany({ where: { customerId: parseInt(id) } }),
+            prisma.task.deleteMany({ where: { customerId: parseInt(id) } }),
+            prisma.event.deleteMany({ where: { customerId: parseInt(id) } }),
+            prisma.file.deleteMany({ where: { customerId: parseInt(id) } }),
+            prisma.customer.delete({ where: { id: parseInt(id) } }),
+        ]);
+
         res.status(204).send();
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -200,7 +207,12 @@ const deleteCustomer = async (req, res) => {
 const assignHandler = async (req, res) => {
     const { id } = req.params;
     const { userId } = req.body;
-    const organizationId = req.user.organizationId;
+    const { organizationId, role } = req.user;
+
+    // Only admins can assign handlers
+    if (role !== 'ORG_ADMIN' && role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Forbidden: Only managers can assign leads.' });
+    }
 
     try {
         const customer = await prisma.customer.update({
@@ -227,7 +239,12 @@ const assignHandler = async (req, res) => {
 const unassignHandler = async (req, res) => {
     const { id } = req.params;
     const { userId } = req.body;
-    const organizationId = req.user.organizationId;
+    const { organizationId, role } = req.user;
+
+    // Only admins can unassign handlers
+    if (role !== 'ORG_ADMIN' && role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Forbidden: Only managers can unassign leads.' });
+    }
 
     try {
         const customer = await prisma.customer.update({

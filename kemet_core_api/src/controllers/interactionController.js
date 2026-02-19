@@ -4,16 +4,35 @@ const prisma = new PrismaClient();
 // Create a new interaction
 const createInteraction = async (req, res) => {
     const { type, notes, date, customerId } = req.body;
-    const organizationId = req.user.organizationId;
-    const userId = req.user.id;
+    const { organizationId, role, id: userId } = req.user;
 
     try {
+        const customerIdInt = parseInt(customerId);
+
+        // 1. Verify customer belongs to org and agent has access
+        const customer = await prisma.customer.findFirst({
+            where: {
+                id: customerIdInt,
+                organizationId: organizationId,
+                ...(role === 'EMPLOYEE' ? {
+                    OR: [
+                        { createdById: userId },
+                        { handlers: { some: { id: userId } } }
+                    ]
+                } : {})
+            }
+        });
+
+        if (!customer) {
+            return res.status(403).json({ message: 'Forbidden: Cannot log interactions for this customer.' });
+        }
+
         const interaction = await prisma.interaction.create({
             data: {
                 type,
                 notes,
                 date: date ? new Date(date) : new Date(),
-                customerId: parseInt(customerId),
+                customerId: customerIdInt,
                 userId: userId,
                 organizationId,
             },

@@ -3,12 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, ArrowRight, Building, Mail, Lock, User as UserIcon } from 'lucide-react';
+import Link from 'next/link';
 
 export default function RegisterPage() {
     const [name, setName] = useState('');
@@ -24,109 +21,136 @@ export default function RegisterPage() {
         setLoading(true);
 
         try {
-            const res = await fetch('http://localhost:4000/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password, companyName }),
+            const data = await api.post<any>('/auth/register', {
+                name,
+                email,
+                password,
+                companyName
             });
 
-            const data = await res.json();
-
-            if (res.ok) {
-                login(data.token, data);
-                toast.success('Account created successfully!');
-                router.push('/dashboard');
-            } else {
-                toast.error(data.message || 'Registration failed');
-            }
-        } catch (err) {
-            toast.error('Something went wrong. Please check your connection.');
+            login(data.token, data);
+            toast.success('Dynasty founded successfully!');
+            router.push('/dashboard');
+        } catch (err: any) {
+            // Error is already handled/toasted by handleResponse in api.ts
+            console.error('Registration error:', err);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-white relative overflow-hidden px-4">
-            {/* Ambient Background Glows */}
-            <div className="absolute top-0 -left-20 w-[600px] h-[600px] bg-yellow-500/5 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-0 -right-20 w-[500px] h-[500px] bg-yellow-600/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="min-h-screen bg-gradient-to-b from-black via-slate-950 to-slate-900 flex items-center justify-center relative overflow-hidden p-6">
+            {/* Luxury gold ambient glow */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-yellow-600/10 via-yellow-900/5 to-transparent rounded-full blur-3xl" />
+                <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyMTgsMTY1LDMyLDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-40" />
+            </div>
 
-            <Card className="w-full max-w-md shadow-2xl border-yellow-600/20 bg-white/80 backdrop-blur-md relative z-10 transition-all hover:shadow-yellow-600/5">
-                <CardHeader className="space-y-4 text-center pb-8">
-                    <div className="flex justify-center mb-2">
-                        <div className="bg-gradient-to-br from-yellow-600 to-yellow-700 p-3 rounded-2xl shadow-lg shadow-yellow-600/20 group-hover:scale-110 transition-transform">
-                            <UserPlus className="h-8 w-8 text-white" />
+            {/* Back to home link */}
+            <Link
+                href="/"
+                className="absolute top-8 left-8 text-sm text-slate-400 hover:text-yellow-500 transition-colors flex items-center gap-2 group"
+            >
+                <ArrowRight className="h-4 w-4 rotate-180 group-hover:-translate-x-1 transition-transform" />
+                Back to home
+            </Link>
+
+            {/* Register Card */}
+            <div className="relative z-10 w-full max-w-xl">
+                <div className="bg-slate-950/80 backdrop-blur-xl border border-yellow-600/20 rounded-2xl p-8 shadow-2xl shadow-yellow-600/5">
+                    {/* Header */}
+                    <div className="text-center mb-10">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-yellow-600/10 border border-yellow-600/20 mb-4">
+                            <UserPlus className="h-8 w-8 text-yellow-500" />
                         </div>
+                        <h1 className="text-4xl font-black bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 bg-clip-text text-transparent tracking-tight mb-2 uppercase italic">
+                            Create Legacy
+                        </h1>
+                        <p className="text-sm text-slate-400 uppercase tracking-widest font-bold opacity-60">Initialize Your Organization</p>
                     </div>
-                    <CardTitle className="text-3xl font-black bg-gradient-to-r from-yellow-600 to-yellow-800 bg-clip-text text-transparent tracking-tighter uppercase italic">Create Account</CardTitle>
-                    <CardDescription className="text-slate-500 font-medium">Join KEMET SYSTEM to start managing your business</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleRegister} className="space-y-6">
-                        <div className="space-y-2">
-                            <Label htmlFor="name" className="text-xs font-black uppercase tracking-widest text-slate-400">Full Name</Label>
-                            <Input
-                                id="name"
-                                placeholder="John Doe"
+
+                    {/* Registration Form */}
+                    <form onSubmit={handleRegister} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2 col-span-2 md:col-span-1">
+                            <label className="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                                <UserIcon size={12} className="text-yellow-600" />
+                                Full Name
+                            </label>
+                            <input
                                 required
-                                className="border-slate-200 focus:border-yellow-600 focus:ring-yellow-600/20 h-11"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
+                                className="w-full px-4 py-3 bg-slate-900/50 border border-yellow-600/20 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-yellow-500/50 transition-all font-medium"
+                                placeholder="Your Name"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-slate-400">Email Address</Label>
-                            <Input
-                                id="email"
+
+                        <div className="space-y-2 col-span-2 md:col-span-1">
+                            <label className="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                                <Mail size={12} className="text-yellow-600" />
+                                Email Address
+                            </label>
+                            <input
                                 type="email"
-                                placeholder="name@company.com"
                                 required
-                                className="border-slate-200 focus:border-yellow-600 focus:ring-yellow-600/20 h-11"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                className="w-full px-4 py-3 bg-slate-900/50 border border-yellow-600/20 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-yellow-500/50 transition-all font-medium"
+                                placeholder="name@dynasty.com"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password" className="text-xs font-black uppercase tracking-widest text-slate-400">Password</Label>
-                            <Input
-                                id="password"
+
+                        <div className="space-y-2 col-span-2 md:col-span-1">
+                            <label className="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                                <Lock size={12} className="text-yellow-600" />
+                                Password
+                            </label>
+                            <input
                                 type="password"
                                 required
-                                className="border-slate-200 focus:border-yellow-600 focus:ring-yellow-600/20 h-11"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                className="w-full px-4 py-3 bg-slate-900/50 border border-yellow-600/20 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-yellow-500/50 transition-all font-medium"
+                                placeholder="••••••••"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="companyName" className="text-xs font-black uppercase tracking-widest text-slate-400">Company Name</Label>
-                            <Input
-                                id="companyName"
-                                placeholder="My Business Ltd."
+
+                        <div className="space-y-2 col-span-2 md:col-span-1">
+                            <label className="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                                <Building size={12} className="text-yellow-600" />
+                                Company Name
+                            </label>
+                            <input
                                 required
-                                className="border-slate-200 focus:border-yellow-600 focus:ring-yellow-600/20 h-11"
                                 value={companyName}
                                 onChange={(e) => setCompanyName(e.target.value)}
+                                className="w-full px-4 py-3 bg-slate-900/50 border border-yellow-600/20 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-yellow-500/50 transition-all font-medium"
+                                placeholder="Empire Corp"
                             />
                         </div>
-                        <Button
+
+                        <button
                             type="submit"
-                            className="w-full bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white shadow-xl shadow-yellow-600/20 border-none h-12 font-black uppercase tracking-wider"
                             disabled={loading}
+                            className="col-span-2 mt-4 py-4 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-black font-black uppercase tracking-[0.2em] rounded-xl shadow-xl shadow-yellow-600/20 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
                         >
-                            {loading ? 'Processing...' : 'Create Account'}
-                        </Button>
+                            {loading ? 'Initializing...' : 'Found Dynasty'}
+                            {!loading && <ArrowRight className="h-4 w-4" />}
+                        </button>
                     </form>
-                </CardContent>
-                <CardFooter className="flex flex-col space-y-4 text-center border-t border-slate-100 mt-4 pt-6">
-                    <p className="text-sm text-slate-500 font-medium">
-                        Already have an account?{' '}
-                        <Button variant="link" asChild className="p-0 text-yellow-600 hover:text-yellow-700 font-black h-auto">
-                            <a href="/login">SIGN IN</a>
-                        </Button>
-                    </p>
-                </CardFooter>
-            </Card>
+
+                    {/* Footer */}
+                    <div className="mt-8 text-center pt-8 border-t border-yellow-600/10">
+                        <p className="text-slate-500 text-sm font-medium">
+                            Already part of the legend?{' '}
+                            <Link href="/login" className="text-yellow-500 hover:text-yellow-400 font-black uppercase tracking-wider underline-offset-4 hover:underline transition-all">
+                                Log In
+                            </Link>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

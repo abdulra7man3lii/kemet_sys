@@ -28,15 +28,20 @@ async function main() {
 
     console.log('--- SEEDING TEST USERS ---');
 
+    // Fetch Global Roles
+    const superAdminRole = await prisma.role.findFirst({ where: { name: 'SUPER_ADMIN', isGlobal: true } });
+    const orgAdminRole = await prisma.role.findFirst({ where: { name: 'ORG_ADMIN', isGlobal: true } });
+    const employeeRole = await prisma.role.findFirst({ where: { name: 'EMPLOYEE', isGlobal: true } });
+
     // 3. Create SUPER_ADMIN
     const superAdmin = await prisma.user.upsert({
         where: { email: 'admin@kemet.sys' },
-        update: { role: 'SUPER_ADMIN', password },
+        update: { roleId: superAdminRole.id, password },
         create: {
             name: 'Kemet Admin',
             email: 'admin@kemet.sys',
             password,
-            role: 'SUPER_ADMIN',
+            roleId: superAdminRole.id,
             organizationId: systemHQ.id
         }
     });
@@ -45,12 +50,12 @@ async function main() {
     // 4. Create ORG_ADMIN
     const orgAdmin = await prisma.user.upsert({
         where: { email: 'ceo@acme.corp' },
-        update: { role: 'ORG_ADMIN', password },
+        update: { roleId: orgAdminRole.id, password },
         create: {
             name: 'Acme CEO',
             email: 'ceo@acme.corp',
             password,
-            role: 'ORG_ADMIN',
+            roleId: orgAdminRole.id,
             organizationId: acmeCorp.id
         }
     });
@@ -59,12 +64,12 @@ async function main() {
     // 5. Create EMPLOYEE
     const employee = await prisma.user.upsert({
         where: { email: 'agent@acme.corp' },
-        update: { role: 'EMPLOYEE', password },
+        update: { roleId: employeeRole.id, password },
         create: {
             name: 'Acme Agent',
             email: 'agent@acme.corp',
             password,
-            role: 'EMPLOYEE',
+            roleId: employeeRole.id,
             organizationId: acmeCorp.id
         }
     });

@@ -61,102 +61,102 @@ export default function DashboardPage() {
 
     return (
         <div className="space-y-8">
-            {/* Luxury Header */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-black p-8 border border-yellow-600/20 shadow-2xl shadow-yellow-600/5">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-radial from-yellow-600/10 to-transparent blur-3xl" />
-                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* KEMET Luxury Header */}
+            <div className="relative overflow-hidden rounded-3xl bg-[#070B14] p-10 border border-[#1B2A40] shadow-2xl">
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4AF37]/5 rounded-full blur-[120px] pointer-events-none" />
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                        <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 bg-clip-text text-transparent tracking-tight flex items-center gap-3">
+                        <h1 className="text-4xl font-black text-[#D4AF37] tracking-tighter flex items-center gap-4 font-serif italic">
                             {user?.organizationName ? `${user.organizationName}` : 'KEMET'}
-                            <span className="text-xs bg-yellow-600/20 text-yellow-500 px-3 py-1 rounded-full font-mono uppercase tracking-widest border border-yellow-600/30">v2.0</span>
+                            <span className="text-[10px] bg-[#D4AF37]/10 text-[#D4AF37] px-3 py-1 rounded-md font-mono font-black uppercase tracking-widest border border-[#D4AF37]/20 not-italic">Engine v2.0</span>
                         </h1>
-                        <p className="text-slate-400 font-medium mt-2">Command Center · <span className="text-yellow-500 font-semibold">{user?.organizationName || 'Your Organization'}</span></p>
+                        <p className="text-[#8A93A5] font-bold text-sm mt-3 uppercase tracking-widest opacity-80">Command Center · <span className="text-[#D4AF37] font-black">{user?.organizationName || 'Master Organization'}</span></p>
                     </div>
-                    <div className="flex gap-3">
-                        <Button variant="outline" size="sm" className="bg-green-950/30 border-green-600/30 text-green-400 hover:bg-green-950/50 hover:border-green-500/50">
-                            <Activity className="h-4 w-4 mr-2" /> System Optimal
-                        </Button>
+                    <div className="flex gap-4">
+                        <div className="flex items-center gap-3 px-4 py-2 bg-[#111C2E] border border-[#1B2A40] rounded-xl">
+                            <div className="w-2 h-2 bg-[#1FBF75] rounded-full animate-pulse shadow-[0_0_8px_#1FBF75]" />
+                            <span className="text-xs font-black text-[#E6EAF0] uppercase tracking-widest">System Optimal</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <Tabs defaultValue="overview" className="space-y-10">
-                <div className="sticky top-[64px] z-20 py-4 -mx-6 px-6 bg-white/80 backdrop-blur-md border-b border-yellow-600/10 shadow-sm transition-all duration-300">
-                    <TabsList className="bg-slate-950 p-1 border-2 border-yellow-600/50 rounded-2xl shadow-[0_10px_40px_-10px_rgba(234,179,8,0.3)] h-14 w-full md:w-max flex overflow-x-auto overflow-y-hidden custom-scrollbar justify-start md:justify-center mx-auto">
-                        <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-700 data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(234,179,8,0.4)] text-slate-400 font-black px-8 py-3 rounded-xl transition-all hover:text-yellow-500 text-base">
-                            <LayoutDashboard className="h-5 w-5 mr-3" /> Overview
+            <Tabs defaultValue="overview" className="space-y-12">
+                <div className="sticky top-[64px] z-20 py-6 -mx-8 px-8 bg-[#0E1624]/95 backdrop-blur-xl border-b border-[#1B2A40] transition-all">
+                    <TabsList className="bg-[#111C2E] p-1.5 border border-[#1B2A40] rounded-2xl h-14 w-full md:w-max flex justify-start md:justify-center mx-auto shadow-2xl">
+                        <TabsTrigger value="overview" className="data-[state=active]:bg-[#D4AF37] data-[state=active]:text-[#070B14] text-[#8A93A5] font-black px-8 py-2.5 rounded-xl transition-all hover:text-[#D4AF37] text-sm uppercase tracking-widest italic">
+                            Overview
                         </TabsTrigger>
                         {(user?.role === 'SUPER_ADMIN' || user?.role === 'ORG_ADMIN') && (
-                            <TabsTrigger value="marketing" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-700 data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(234,179,8,0.4)] text-slate-400 font-black px-8 py-3 rounded-xl transition-all hover:text-yellow-500 text-base">
-                                <Zap className="h-5 w-5 mr-3" /> Marketing
+                            <TabsTrigger value="marketing" className="data-[state=active]:bg-[#D4AF37] data-[state=active]:text-[#070B14] text-[#8A93A5] font-black px-8 py-2.5 rounded-xl transition-all hover:text-[#D4AF37] text-sm uppercase tracking-widest italic">
+                                Marketing
                             </TabsTrigger>
                         )}
-                        <TabsTrigger value="crm" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-700 data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(234,179,8,0.4)] text-slate-400 font-black px-8 py-3 rounded-xl transition-all hover:text-yellow-500 text-base">
-                            <CheckSquare className="h-5 w-5 mr-3" /> CRM Ops
+                        <TabsTrigger value="crm" className="data-[state=active]:bg-[#D4AF37] data-[state=active]:text-[#070B14] text-[#8A93A5] font-black px-8 py-2.5 rounded-xl transition-all hover:text-[#D4AF37] text-sm uppercase tracking-widest italic">
+                            CRM Ops
+                        </TabsTrigger>
+                        <TabsTrigger value="laundry" className="data-[state=active]:bg-[#D4AF37] data-[state=active]:text-[#070B14] text-[#8A93A5] font-black px-8 py-2.5 rounded-xl transition-all hover:text-[#D4AF37] text-sm uppercase tracking-widest italic">
+                            Data Laundry
                         </TabsTrigger>
                         {(user?.role === 'SUPER_ADMIN' || user?.role === 'ORG_ADMIN') && (
-                            <TabsTrigger value="laundry" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-700 data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(234,179,8,0.4)] text-slate-400 font-black px-8 py-3 rounded-xl transition-all hover:text-yellow-500 text-base">
-                                <Eraser className="h-5 w-5 mr-3" /> Data Laundry
-                            </TabsTrigger>
-                        )}
-                        {(user?.role === 'SUPER_ADMIN' || user?.role === 'ORG_ADMIN') && (
-                            <TabsTrigger value="finance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-700 data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(234,179,8,0.4)] text-slate-400 font-black px-8 py-3 rounded-xl transition-all hover:text-yellow-500 text-base">
-                                <DollarSign className="h-5 w-5 mr-3" /> Finance Hub
+                            <TabsTrigger value="finance" className="data-[state=active]:bg-[#D4AF37] data-[state=active]:text-[#070B14] text-[#8A93A5] font-black px-8 py-2.5 rounded-xl transition-all hover:text-[#D4AF37] text-sm uppercase tracking-widest italic">
+                                Finance Hub
                             </TabsTrigger>
                         )}
                     </TabsList>
                 </div>
 
                 {/* OVERVIEW TAB */}
-                <TabsContent value="overview" className="space-y-8 animate-in fade-in duration-500">
+                <TabsContent value="overview" className="space-y-10 animate-in fade-in duration-700">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <Card className="border-yellow-600/20 bg-gradient-to-br from-white to-yellow-50/10 shadow-lg shadow-yellow-600/5 group hover:border-yellow-600/40 transition-all">
-                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-yellow-600 transition-colors">
-                                    {user?.role === 'EMPLOYEE' ? 'My Leads' : 'Total Leads'}
+                        <Card className="bg-[#111C2E] border-[#1B2A40] shadow-xl group hover:border-[#D4AF37]/50 transition-all">
+                            <CardHeader className="flex flex-row items-center justify-between pb-3 space-y-0">
+                                <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8A93A5] group-hover:text-[#D4AF37] transition-colors font-serif italic">
+                                    {user?.role === 'EMPLOYEE' ? 'Target Leads' : 'Global Leads'}
                                 </CardTitle>
-                                <Users className="h-4 w-4 text-yellow-600" />
+                                <Users className="h-4 w-4 text-[#D4AF37]" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-3xl font-black text-slate-900 italic tracking-tighter">
-                                    {stats?.totalLeads || 0}
+                                <div className="text-3xl font-black text-[#E6EAF0] italic tracking-tighter">
+                                    {loading ? '...' : stats?.totalLeads || 0}
                                 </div>
-                                <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">
-                                    {user?.role === 'EMPLOYEE' ? 'Currently Managed' : 'Across Organization'}
+                                <p className="text-[10px] font-bold text-[#8A93A5] mt-1 uppercase tracking-widest">
+                                    {user?.role === 'EMPLOYEE' ? 'Directly Managed' : 'Organization Wide'}
                                 </p>
                             </CardContent>
                         </Card>
 
-                        <Card className="border-yellow-600/30 bg-gradient-to-br from-yellow-50 to-white shadow-lg shadow-yellow-600/10 transition-all hover:shadow-xl hover:shadow-yellow-600/20 hover:border-yellow-600/50 border-l-4 border-l-yellow-600 group">
-                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                <CardTitle className="text-sm font-bold text-yellow-700 uppercase tracking-wider">My Leads</CardTitle>
-                                <UserIcon className="h-5 w-5 text-yellow-600 transition-transform group-hover:scale-110" />
+                        <Card className="bg-[#111C2E] border-[#1B2A40] shadow-xl border-l-4 border-l-[#D4AF37] group relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-[#D4AF37]/5 rounded-full -mr-10 -mt-10" />
+                            <CardHeader className="flex flex-row items-center justify-between pb-3 space-y-0">
+                                <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] font-serif italic">Personalized</CardTitle>
+                                <UserIcon className="h-4 w-4 text-[#D4AF37]" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-4xl font-bold bg-gradient-to-r from-yellow-700 to-yellow-600 bg-clip-text text-transparent">{loading ? '...' : stats?.myLeads}</div>
-                                <p className="text-xs text-yellow-600 font-bold mt-1">Assigned to you</p>
+                                <div className="text-3xl font-black text-[#E6EAF0] italic tracking-tighter">{loading ? '...' : stats?.myLeads}</div>
+                                <p className="text-[10px] font-bold text-[#D4AF37]/80 mt-1 uppercase tracking-widest font-mono">Assigned Assets</p>
                             </CardContent>
                         </Card>
 
-                        <Card className="border-green-600/20 bg-gradient-to-br from-white to-green-50/30 shadow-lg shadow-green-600/5 transition-all hover:shadow-xl hover:shadow-green-600/10 hover:border-green-600/40 group">
-                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                <CardTitle className="text-sm font-bold text-slate-700 uppercase tracking-wider">Customers</CardTitle>
-                                <CheckCircle2 className="h-5 w-5 text-green-600 transition-transform group-hover:scale-110" />
+                        <Card className="bg-[#111C2E] border-[#1B2A40] shadow-xl group hover:border-[#1FBF75]/50 transition-all border-l-4 border-l-[#1FBF75]">
+                            <CardHeader className="flex flex-row items-center justify-between pb-3 space-y-0">
+                                <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8A93A5] group-hover:text-[#1FBF75] transition-colors font-serif italic">Converted</CardTitle>
+                                <CheckCircle2 className="h-4 w-4 text-[#1FBF75]" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-4xl font-bold bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-transparent">{loading ? '...' : stats?.customersCount}</div>
-                                <p className="text-xs text-green-600 font-bold mt-1">Successfully closed</p>
+                                <div className="text-3xl font-black text-[#E6EAF0] italic tracking-tighter">{loading ? '...' : stats?.customersCount}</div>
+                                <p className="text-[10px] font-bold text-[#1FBF75]/80 mt-1 uppercase tracking-widest font-mono">Enterprise Clients</p>
                             </CardContent>
                         </Card>
 
-                        <Card className="border-slate-600/20 bg-gradient-to-br from-slate-900 to-slate-800 shadow-lg shadow-slate-900/20 transition-all hover:shadow-xl hover:shadow-slate-900/30 hover:border-yellow-600/40 group">
-                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                <CardTitle className="text-sm font-bold text-slate-300 uppercase tracking-wider">System Status</CardTitle>
-                                <TrendingUp className="h-5 w-5 text-yellow-500 transition-transform group-hover:scale-110" />
+                        <Card className="bg-[#070B14] border-[#1B2A40] shadow-2xl transition-all border-r-4 border-r-[#D4AF37] group">
+                            <CardHeader className="flex flex-row items-center justify-between pb-3 space-y-0">
+                                <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] font-serif italic italic">Engine Status</CardTitle>
+                                <TrendingUp className="h-4 w-4 text-[#D4AF37]" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-4xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">100%</div>
-                                <p className="text-xs text-yellow-500 font-bold mt-1">All systems operational</p>
+                                <div className="text-3xl font-black text-[#D4AF37] italic tracking-tighter">100%</div>
+                                <p className="text-[10px] font-bold text-[#D4AF37]/80 mt-1 uppercase tracking-widest font-mono">Optimal Flow</p>
                             </CardContent>
                         </Card>
                     </div>
@@ -299,7 +299,7 @@ export default function DashboardPage() {
                                     <CardDescription>Manage your data quality pipelines.</CardDescription>
                                 </div>
                                 <Button variant="outline" size="sm" asChild>
-                                    <Link href="/dashboard/import">Go to Importer</Link>
+                                    <Link href="/dashboard/laundry/contacts">View Database</Link>
                                 </Button>
                             </CardHeader>
                             <CardContent>

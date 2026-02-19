@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
+from typing import List, Dict, Any
+from cleaning_service import DataCleaningService
 
 app = FastAPI()
 
@@ -9,3 +11,13 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+@app.post("/clean-contact")
+def clean_single_contact(data: Dict[str, Any] = Body(...)):
+    cleaned = DataCleaningService.clean_contact(data)
+    return cleaned
+
+@app.post("/clean-batch")
+def clean_batch_contacts(contacts: List[Dict[str, Any]] = Body(...)):
+    cleaned = DataCleaningService.clean_batch(contacts)
+    return cleaned

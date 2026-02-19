@@ -13,6 +13,7 @@ datasource db {
 model Organization {
   id        Int      @id @default(autoincrement())
   name      String
+  storageUsed BigInt  @default(0) // Track storage in bytes
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -29,6 +30,12 @@ model Organization {
   files         File[]
   finance       FinanceRecord[]
   roles         Role[] // Custom roles for this organization
+  contactLists  ContactList[]
+  folders       Folder[]
+  importJobs    ImportJob[]
+  whatsappAccounts  WhatsAppAccount[]
+  whatsappTemplates WhatsAppTemplate[]
+  whatsappCampaigns WhatsAppCampaign[]
 }
 
 model Plan {
@@ -37,6 +44,7 @@ model Plan {
   description String?
   price       Float    @default(0)
   userLimit   Int      @default(5)
+  storageLimit Int     @default(100) // Default 100MB
   features    String[] // e.g., ["ROLE_MANAGER", "FINANCE_HUB", "MARKETING_WA"]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -115,6 +123,49 @@ model User {
   createdTasks     Task[]         @relation("CreatedByTask")
   events           Event[]
   files            File[]
+  folders          Folder[]
+  contactLists     ContactList[]
+  importJobs       ImportJob[]
+  whatsappCampaigns WhatsAppCampaign[]
+}
+
+model ContactList {
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  createdById    Int
+  createdBy      User         @relation(fields: [createdById], references: [id])
+
+  contacts       LaundryContact[]
+  whatsappCampaigns WhatsAppCampaign[]
+}
+
+model LaundryContact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String?
+  email     String?
+  language  String?
+  city      String?
+  isClean   Boolean  @default(false)
+  isValid   Boolean  @default(true)
+  score     Int      @default(0)
+  
+  listId    Int
+  list      ContactList @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  duplicateInfo String? // JSON string or text: "List: XYZ, User: ABC"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  whatsappLogs WhatsAppMessageLog[]
 }
 
 model Customer {
@@ -220,6 +271,26 @@ model Event {
   user           User @relation(fields: [userId], references: [id])
 }
 
+model Folder {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  parentId  Int?
+  parent    Folder?   @relation("SubFolders", fields: [parentId], references: [id])
+  children  Folder[]  @relation("SubFolders")
+  
+  files     File[]
+  
+  userId    Int
+  user      User @relation(fields: [userId], references: [id])
+}
+
 model File {
   id        Int      @id @default(autoincrement())
   name      String
@@ -232,6 +303,9 @@ model File {
   organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [id])
   
+  folderId       Int?
+  folder         Folder? @relation(fields: [folderId], references: [id])
+
   customerId     Int?
   customer       Customer? @relation(fields: [customerId], references: [id])
   
@@ -251,4 +325,105 @@ model FinanceRecord {
   // Relations
   organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model ImportJob {
+  id              Int          @id @default(autoincrement())
+  fileName        String
+  status          String       @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  totalRows       Int          @default(0)
+  processedRows   Int          @default(0)
+  errors          Json?        // To store row-level errors
+  organizationId  Int
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  userId          Int
+  user            User         @relation(fields: [userId], references: [id])
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model WhatsAppAccount {
+  id                Int      @id @default(autoincrement())
+  phoneNumber       String   @unique
+  displayName       String?
+  apiKey            String
+  phoneId           String
+  businessAccountId String
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizationId    Int
+  organization      Organization @relation(fields: [organizationId], references: [id])
+
+  campaigns         WhatsAppCampaign[]
+  templates         WhatsAppTemplate[]
+  logs              WhatsAppMessageLog[]
+}
+
+model WhatsAppTemplate {
+  id                Int      @id @default(autoincrement())
+  name              String
+  language          String   @default("en_US")
+  category          String   @default("MARKETING")
+  components        Json     // Store header, body, footer, buttons
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizationId    Int
+  organization      Organization @relation(fields: [organizationId], references: [id])
+  accounts          WhatsAppAccount[]
+  campaigns         WhatsAppCampaign[]
+}
+
+model WhatsAppCampaign {
+  id                Int       @id @default(autoincrement())
+  name              String
+  status            String    @default("DRAFT") // DRAFT, SCHEDULED, SENDING, COMPLETED, FAILED, PAUSED
+  batchSettings     Json?     // { qtyPerSecond: 1, batchMode: "PATCH" | "INSTANT" }
+  
+  scheduledAt       DateTime?
+  startedAt         DateTime?
+  completedAt       DateTime?
+
+  organizationId    Int
+  organization      Organization @relation(fields: [organizationId], references: [id])
+
+  createdById       Int
+  createdBy         User         @relation(fields: [createdById], references: [id])
+
+  listId            Int
+  list              ContactList  @relation(fields: [listId], references: [id])
+
+  senderAccounts    WhatsAppAccount[] 
+
+  templateId        Int?
+  template          WhatsAppTemplate? @relation(fields: [templateId], references: [id])
+  templateName      String?
+
+  logs              WhatsAppMessageLog[]
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model WhatsAppMessageLog {
+  id                Int       @id @default(autoincrement())
+  metaMessageId     String?   @unique // The ID returned by Meta
+  status            String    @default("PENDING") // PENDING, SENT, DELIVERED, READ, FAILED
+  errorCode         String?
+  errorMessage      String?
+  
+  campaignId        Int
+  campaign          WhatsAppCampaign @relation(fields: [campaignId], references: [id])
+
+  accountId         Int
+  account           WhatsAppAccount  @relation(fields: [accountId], references: [id])
+
+  recipientId       Int
+  recipient         LaundryContact   @relation(fields: [recipientId], references: [id])
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }

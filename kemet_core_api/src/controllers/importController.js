@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const xlsx = require('xlsx');
-const { cleanRow } = require('../services/dataCleaningService');
+const { cleanRow, cleanBatch } = require('../services/dataCleaningService');
 
 /**
  * Preview the import from an uploaded Excel file.
@@ -37,50 +37,110 @@ const previewImport = async (req, res) => {
 
 /**
  * Process the full import using user-provided mapping.
+ * Optimized for background processing with ImportJob tracking.
  */
 const processImport = async (req, res) => {
     const { mapping, fileName } = req.body;
     const organizationId = req.user.organizationId;
     const userId = req.user.id;
 
-    if (!req.file && !mapping) {
+    if (!req.file || !mapping) {
         return res.status(400).json({ message: 'Missing file or mapping' });
     }
 
     try {
+        const parsedMapping = typeof mapping === 'string' ? JSON.parse(mapping) : mapping;
         const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const data = xlsx.utils.sheet_to_json(worksheet);
 
-        const cleanedData = data.map(row => ({
-            ...cleanRow(row, mapping),
-            organizationId,
-            createdById: userId,
-        })).filter(customer => customer.email || customer.phone); // Require at least one contact point
-
-        // Import in chunks to avoid database timeouts
-        const chunkSize = 100;
-        let importedCount = 0;
-
-        for (let i = 0; i < cleanedData.length; i += chunkSize) {
-            const chunk = cleanedData.slice(i, i + chunkSize);
-
-            // We use createMany for speed if the DB supports it, otherwise loop.
-            // Note: createMany with skipDuplicates: true is good for deduplication.
-            const result = await prisma.customer.createMany({
-                data: chunk,
-                skipDuplicates: true,
-            });
-            importedCount += result.count;
-        }
-
-        res.json({
-            message: 'Import complete',
-            totalProcessed: cleanedData.length,
-            totalImported: importedCount,
-            duplicatesSkipped: cleanedData.length - importedCount,
+        // Create a Job record
+        const job = await prisma.importJob.create({
+            data: {
+                fileName: fileName || 'Import',
+                status: 'PROCESSING',
+                totalRows: data.length,
+                organizationId,
+                userId
+            }
         });
+
+        // Respond immediately with jobId
+        res.json({ message: 'Import started', jobId: job.id });
+
+        // Run processing in background
+        (async () => {
+            try {
+                const chunkSize = 50;
+                let importedCount = 0;
+
+                for (let i = 0; i < data.length; i += chunkSize) {
+                    const chunk = data.slice(i, i + chunkSize);
+
+                    // Clean chunk using potential Python engine
+                    const rawData = chunk.map(row => ({
+                        name: row[parsedMapping.name],
+                        phone: row[parsedMapping.phone],
+                        email: row[parsedMapping.email],
+                        company: row[parsedMapping.company]
+                    }));
+
+                    const cleanedChunk = await cleanBatch(rawData);
+
+                    const customersToInsert = cleanedChunk.map(c => ({
+                        ...c,
+                        organizationId,
+                        createdById: userId
+                    })).filter(c => c.email || c.phone);
+
+                    const result = await prisma.customer.createMany({
+                        data: customersToInsert,
+                        skipDuplicates: true,
+                    });
+
+                    importedCount += result.count;
+
+                    // Update progress
+                    await prisma.importJob.update({
+                        where: { id: job.id },
+                        data: { processedRows: Math.min(i + chunkSize, data.length) }
+                    });
+                }
+
+                await prisma.importJob.update({
+                    where: { id: job.id },
+                    data: { status: 'COMPLETED', processedRows: data.length }
+                });
+            } catch (error) {
+                console.error(`Import Job ${job.id} failed:`, error);
+                await prisma.importJob.update({
+                    where: { id: job.id },
+                    data: { status: 'FAILED' }
+                });
+            }
+        })();
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * Get the status of an import job.
+ */
+const getJobStatus = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const job = await prisma.importJob.findUnique({
+            where: {
+                id: parseInt(id),
+                organizationId: req.user.organizationId
+            }
+        });
+
+        if (!job) return res.status(404).json({ message: 'Job not found' });
+        res.json(job);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -89,4 +149,5 @@ const processImport = async (req, res) => {
 module.exports = {
     previewImport,
     processImport,
+    getJobStatus
 };

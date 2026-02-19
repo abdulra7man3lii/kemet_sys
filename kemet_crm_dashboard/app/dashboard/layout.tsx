@@ -21,11 +21,7 @@ export default function DashboardLayout({
                 router.push('/login');
             } else if (user?.role === 'EMPLOYEE') {
                 const restrictedPaths = [
-                    '/dashboard/import',
-                    '/dashboard/team',
-                    '/dashboard/finance',
-                    '/dashboard/marketing',
-                    '/dashboard/laundry'
+                    '/dashboard/marketing'
                 ];
                 if (restrictedPaths.some(path => pathname.startsWith(path))) {
                     router.push('/dashboard');

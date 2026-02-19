@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 
-const API_URL = 'http://localhost:4000/api';
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000') + '/api';
 
 const getHeaders = () => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -37,10 +37,16 @@ export const api = {
     },
 
     post: async <T>(endpoint: string, body: any): Promise<T> => {
+        const isFormData = body instanceof FormData;
+        const headers = { ...getHeaders() };
+        if (isFormData) {
+            delete (headers as any)['Content-Type'];
+        }
+
         const res = await fetch(`${API_URL}${endpoint}`, {
             method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(body),
+            headers: headers,
+            body: isFormData ? body : JSON.stringify(body),
         });
         return handleResponse<T>(res);
     },

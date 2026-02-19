@@ -5,126 +5,147 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --radius-sm: calc(var(--radius) - 4px);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) + 4px);
-    --radius-2xl: calc(var(--radius) + 8px);
-    --radius-3xl: calc(var(--radius) + 12px);
-    --radius-4xl: calc(var(--radius) + 16px);
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --color-card: var(--card);
-    --color-card-foreground: var(--card-foreground);
-    --color-popover: var(--popover);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-secondary: var(--secondary);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-muted: var(--muted);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-accent: var(--accent);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-destructive: var(--destructive);
-    --color-border: var(--border);
-    --color-input: var(--input);
-    --color-ring: var(--ring);
-    --color-chart-1: var(--chart-1);
-    --color-chart-2: var(--chart-2);
-    --color-chart-3: var(--chart-3);
-    --color-chart-4: var(--chart-4);
-    --color-chart-5: var(--chart-5);
-    --color-sidebar: var(--sidebar);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 /* Luxury Gold Theme - Black, White, Gold */
 :root {
-    --radius: 0.5rem;
-    
-    /* Main colors - White background with black text */
-    --background: 0 0% 100%;  /* Pure white */
-    --foreground: 0 0% 5%;     /* Almost black */
-    
-    /* Cards - White with subtle shadow */
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 5%;
-    
-    /* Popover */
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 5%;
-    
-    /* Primary - Luxury Gold */
-    --primary: 45 100% 51%;      /* Rich gold #FFD700 */
-    --primary-foreground: 0 0% 5%;
-    
-    /* Secondary - Dark charcoal */
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 100%;
-    
-    /* Muted - Light gray */
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 40%;
-    
-    /* Accent - Gold accent */
-    --accent: 45 100% 51%;
-    --accent-foreground: 0 0% 5%;
-    
-    /* Destructive */
-    --destructive: 0 84% 60%;
-    
-    /* Borders - Subtle gold tint */
-    --border: 45 30% 90%;
-    --input: 45 30% 90%;
-    --ring: 45 100% 51%;
-    
-    /* Charts - Gold variations */
-    --chart-1: 45 100% 51%;   /* Gold */
-    --chart-2: 0 0% 10%;      /* Black */
-    --chart-3: 45 80% 60%;    /* Light gold */
-    --chart-4: 0 0% 30%;      /* Dark gray */
-    --chart-5: 45 90% 45%;    /* Deep gold */
-    
-    /* Sidebar - Black with gold accents */
-    --sidebar: 0 0% 8%;        /* Almost black */
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 45 100% 51%;
-    --sidebar-primary-foreground: 0 0% 5%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 45 100% 51%;
-    --sidebar-border: 45 20% 20%;
-    --sidebar-ring: 45 100% 51%;
+  --radius: 0.75rem;
+
+  /* KEMET Enterprise Dark Palette */
+  --background: 222 47% 5%;
+  /* #070B14 - Deep Midnight */
+  --foreground: 214 32% 93%;
+  /* #E6EAF0 - Soft White Header */
+
+  /* Cards - Soft Elevated Dark */
+  --card: 217 45% 12%;
+  /* #111C2E */
+  --card-foreground: 214 32% 91%;
+
+  /* Popover */
+  --popover: 222 47% 7%;
+  /* #0E1624 */
+  --popover-foreground: 214 32% 91%;
+
+  /* Primary - Elegant Gold #D4AF37 */
+  --primary: 46 65% 52%;
+  --primary-foreground: 222 47% 5%;
+
+  /* Secondary - Dark Blue Surface #0E1624 */
+  --secondary: 222 47% 10%;
+  --secondary-foreground: 214 32% 91%;
+
+  /* Muted - Soft Gray-Blue */
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 15% 65%;
+  /* #8A93A5 */
+
+  /* Accent - Gold Highlight */
+  --accent: 46 65% 52%;
+  /* #D4AF37 */
+  --accent-foreground: 222 47% 5%;
+
+  /* Destructive - Softened Error #E5484D */
+  --destructive: 358 75% 59%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Borders & Dividers - #1B2A40 */
+  --border: 215 40% 18%;
+  --input: 215 40% 18%;
+  --ring: 46 65% 52%;
+
+  /* Status Colors */
+  --success: 152 72% 44%;
+  /* #1FBF75 */
+  --warning: 37 92% 55%;
+  /* #F5A524 */
+  --info: 213 94% 60%;
+  /* #3B82F6 */
+
+  /* Charts - Professional Palette */
+  --chart-1: 46 65% 52%;
+  /* Gold */
+  --chart-2: 213 94% 60%;
+  /* Blue */
+  --chart-3: 152 72% 44%;
+  /* Green */
+  --chart-4: 37 92% 55%;
+  /* Warning */
+  --chart-5: 358 75% 59%;
+  /* Error */
+
+  /* Sidebar - Darkest Surface #070B14 */
+  --sidebar: 222 47% 5%;
+  --sidebar-foreground: 215 15% 65%;
+  --sidebar-primary: 46 65% 52%;
+  --sidebar-primary-foreground: 222 47% 5%;
+  --sidebar-accent: 217 33% 18%;
+  --sidebar-accent-foreground: 46 65% 52%;
+  --sidebar-border: 215 40% 18%;
+  --sidebar-ring: 46 65% 52%;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
+
   body {
-    @apply bg-white text-foreground;
-    }
-    
+    @apply bg-background text-foreground;
+  }
+
   /* Luxury scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
-    @apply bg-slate-100;
+    @apply bg-background;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     @apply bg-gradient-to-b from-yellow-600 to-yellow-700 rounded-full;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     @apply from-yellow-500 to-yellow-600;
   }

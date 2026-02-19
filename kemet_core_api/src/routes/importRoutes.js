@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { previewImport, processImport } = require('../controllers/importController');
+const { previewImport, processImport, getJobStatus } = require('../controllers/importController');
 const { protect } = require('../middleware/authMiddleware');
 const { restrictTo } = require('../middleware/rbacMiddleware');
+const validate = require('../middleware/validationMiddleware');
+const { processImportSchema } = require('../validators/importValidator');
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -13,9 +15,9 @@ const upload = multer({
 
 // Protect all import routes
 router.use(protect);
-router.use(restrictTo('ORG_ADMIN', 'SUPER_ADMIN'));
 
 router.post('/preview', upload.single('file'), previewImport);
-router.post('/process', upload.single('file'), processImport);
+router.post('/process', upload.single('file'), restrictTo('ORG_ADMIN', 'SUPER_ADMIN'), validate(processImportSchema), processImport);
+router.get('/job/:id', getJobStatus);
 
 module.exports = router;
